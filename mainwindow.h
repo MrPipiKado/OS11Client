@@ -10,6 +10,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <pthread.h>
+#include "reciever.h"
 #define LENGTH 2048
 #include <QMainWindow>
 
@@ -26,12 +27,14 @@ public:
     ~MainWindow();
 public slots:
     void recv_msg_handler();
+    void set_msg(QString msg);
 private slots:
     void on_pushButton_clicked();
 
 private:
     Ui::MainWindow *ui;
-    int sockfd = 0;
+    int sockfd;
+    RECIEVER *reciever ;
     struct sockaddr_in server_addr;
     char name[32];
     QString text;

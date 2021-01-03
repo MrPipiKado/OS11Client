@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <ctime>
 #include <QCloseEvent>
+#include <QThread>
 void str_trim_lf (char* arr, int length) {
   int i;
   for (i = 0; i < length; i++) { // trim \n
@@ -43,15 +44,18 @@ MainWindow::MainWindow(QWidget *parent)
             printf("ERROR: connect\n");
         }
     send(sockfd, name, 32, 0);
-    std::srand(time(nullptr));
-    QTimer *timer = new QTimer(this);
+    reciever = new RECIEVER(&sockfd, &server_addr);
+    //std::srand(time(nullptr));
+    //QTimer *timer = new QTimer(this);
     //pthread_t recv_msg_thread;
       /*if(pthread_create(&recv_msg_thread, NULL, (void *) recv_msg_handler, NULL) != 0){
             printf("ERROR: pthread\n");
             //return EXIT_FAILURE;
         }*/
-    connect(timer, &QTimer::timeout, this, &MainWindow::recv_msg_handler);
-    timer->start(1000);
+    //connect(timer, &QTimer::timeout, this, &MainWindow::recv_msg_handler);
+    //timer->start(1000);
+    connect(reciever , SIGNAL(reciever(QString)),   this, SLOT(set_msg(QString)));
+    reciever->start();
 }
 
 MainWindow::~MainWindow()
@@ -64,12 +68,17 @@ void MainWindow::recv_msg_handler()
     char message[LENGTH] = {};
     int receive = recv(sockfd, message, LENGTH, 0);
     if (receive > 0) {
-       //ui->textEdit->setText(ui->textEdit->toPlainText()+QString::fromStdString(std::string(message)));
+       ui->textEdit->setText(ui->textEdit->toPlainText()+QString::fromStdString(std::string(message)));
     } else if (receive == 0) {
     } else {
     // -1
     }
     memset(message, 0, sizeof(message));
+}
+
+void MainWindow::set_msg(QString msg)
+{
+    ui->textEdit->setText(ui->textEdit->toPlainText()+msg);
 }
 
 void MainWindow::on_pushButton_clicked()

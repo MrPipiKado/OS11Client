@@ -45,15 +45,6 @@ MainWindow::MainWindow(QWidget *parent)
         }
     send(sockfd, name, 32, 0);
     reciever = new RECIEVER(&sockfd, &server_addr);
-    //std::srand(time(nullptr));
-    //QTimer *timer = new QTimer(this);
-    //pthread_t recv_msg_thread;
-      /*if(pthread_create(&recv_msg_thread, NULL, (void *) recv_msg_handler, NULL) != 0){
-            printf("ERROR: pthread\n");
-            //return EXIT_FAILURE;
-        }*/
-    //connect(timer, &QTimer::timeout, this, &MainWindow::recv_msg_handler);
-    //timer->start(1000);
     connect(reciever , SIGNAL(reciever(QString)),   this, SLOT(set_msg(QString)));
     reciever->start();
 }
@@ -63,18 +54,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::recv_msg_handler()
-{
-    char message[LENGTH] = {};
-    int receive = recv(sockfd, message, LENGTH, 0);
-    if (receive > 0) {
-       ui->textEdit->setText(ui->textEdit->toPlainText()+QString::fromStdString(std::string(message)));
-    } else if (receive == 0) {
-    } else {
-    // -1
-    }
-    memset(message, 0, sizeof(message));
-}
 
 void MainWindow::set_msg(QString msg)
 {
@@ -83,5 +62,11 @@ void MainWindow::set_msg(QString msg)
 
 void MainWindow::on_pushButton_clicked()
 {
-
+    char message[LENGTH] = {};
+    char buffer[LENGTH + 32] = {};
+    strcpy(message,ui->lineEdit->text().toStdString().c_str());
+    sprintf(buffer, "%s: %s\n", name, message);
+    ui->textEdit->setText(ui->textEdit->toPlainText()+"You: "+ui->lineEdit->text());
+    ui->lineEdit->clear();
+    send(sockfd, buffer, strlen(buffer), 0);
 }

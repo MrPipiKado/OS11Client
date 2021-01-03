@@ -26,7 +26,6 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 public slots:
-    void recv_msg_handler();
     void set_msg(QString msg);
 private slots:
     void on_pushButton_clicked();

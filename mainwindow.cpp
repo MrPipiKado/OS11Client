@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
     this ->text = " ";
     char *ip = "127.0.0.1";
     int port = atoi("8888");
-    strcpy(name, "MrPipiKado");
+    strcpy(name, "Likhtar");
     str_trim_lf(name, strlen(name));
     if (strlen(name) > 32 || strlen(name) < 2){
         printf("Name must be less than 30 and more than 2 characters.\n");
@@ -66,7 +66,7 @@ void MainWindow::on_pushButton_clicked()
     char buffer[LENGTH + 32] = {};
     strcpy(message,ui->lineEdit->text().toStdString().c_str());
     sprintf(buffer, "%s: %s\n", name, message);
-    ui->textEdit->setText(ui->textEdit->toPlainText()+"You: "+ui->lineEdit->text());
+    ui->textEdit->setText(ui->textEdit->toPlainText()+"You: "+ui->lineEdit->text()+"\n");
     ui->lineEdit->clear();
     send(sockfd, buffer, strlen(buffer), 0);
 }

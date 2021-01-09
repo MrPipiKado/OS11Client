@@ -6,6 +6,9 @@
 #include <ctime>
 #include <QCloseEvent>
 #include <QThread>
+#include <QInputDialog>
+#include <QDir>
+#include "question.h"
 void str_trim_lf (char* arr, int length) {
   int i;
   for (i = 0; i < length; i++) { // trim \n
@@ -22,13 +25,31 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     this ->text = " ";
-    char *ip = "127.0.0.1";
+    bool ok;
+       QString ip_add = QInputDialog::getText(this, tr("Server"),
+                                            tr("IP: "), QLineEdit::Normal,
+                                            "127.0.0.1", &ok);
+       if (ok && !text.isEmpty())
+       {
+           ui->statusbar->showMessage(ip_add);
+           strcpy(server_ip, ip_add.toStdString().c_str());
+       }
+    char *ip = server_ip;
     int port = atoi("8888");
-    strcpy(name, "Likhtar");
+    question form(ip_add, this);
+    int res = form.exec();
+    if(res>0)
+    {
+        strcpy(name, username.toStdString().c_str());
+    }
+    else
+    {
+        exit(1);
+    }
+
     str_trim_lf(name, strlen(name));
     if (strlen(name) > 32 || strlen(name) < 2){
         printf("Name must be less than 30 and more than 2 characters.\n");
-        //return EXIT_FAILURE;
     }
 
     /* Socket settings */
@@ -64,7 +85,7 @@ void MainWindow::on_pushButton_clicked()
 {
     char message[LENGTH] = {};
     char buffer[LENGTH + 32] = {};
-    strcpy(message,ui->lineEdit->text().toStdString().c_str());
+    strcpy(message,(ui->lineEdit->text() + " ").toStdString().c_str());
     sprintf(buffer, "%s: %s\n", name, message);
     ui->textEdit->setText(ui->textEdit->toPlainText()+"You: "+ui->lineEdit->text()+"\n");
     ui->lineEdit->clear();

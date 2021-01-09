@@ -36,6 +36,7 @@ private:
     RECIEVER *reciever ;
     struct sockaddr_in server_addr;
     char name[32];
+    char server_ip[15];
     QString text;
 };
 #endif // MAINWINDOW_H
